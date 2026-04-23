@@ -32,18 +32,18 @@ template <class T> struct List {
     void push_front(Node* l);
     void push_back(Node* l);
 
-    static Node* find_from(const God& target, Node* from);
-    Node* find(const God& target) { return find_from(target, head_); }
-    Node* find_tail(const God& target) { return find_from(target, tail_); }
-    const Node* find(const God& target) const;
+    static Node* find_from(const T& target, Node* from);
+    Node* find(const T& target) { return find_from(target, head_); }
+    Node* find_tail(const T& target) { return find_from(target, tail_); }
+    const Node* find(const T& target) const;
 
     void remove(Node* target);
-    void remove(const God& target) { remove(find(target)); }
+    void remove(const T& target) { remove(find(target)); }
     void insert(Node* to, Node* l);
 
-    void push_back(const God& g) { push_back(new Node{g}); }
-    void push_front(const God& g) { push_front(new Node{g}); }
-    void insert(Node* to, const God& g) { insert(to, new Node{g}); }
+    void push_back(const T& g) { push_back(new Node{g}); }
+    void push_front(const T& g) { push_front(new Node{g}); }
+    void insert(Node* to, const T& g) { insert(to, new Node{g}); }
 
     int size() const { return size_; }
     Node* begin() { return head_; }
@@ -96,7 +96,7 @@ template <class T> void List<T>::push_back(Node* l) {
 }
 
 template <class T>
-List<T>::Node* List<T>::find_from(const God& target, List<T>::Node* from) {
+List<T>::Node* List<T>::find_from(const T& target, List<T>::Node* from) {
     if (from == nullptr)
         return nullptr;
     if (from->data == target)
@@ -120,7 +120,7 @@ List<T>::Node* List<T>::find_from(const God& target, List<T>::Node* from) {
     }
 }
 
-template <class T> const List<T>::Node* List<T>::find(const God& target) const {
+template <class T> const List<T>::Node* List<T>::find(const T& target) const {
     if (head_ == nullptr)
         return nullptr;
     const List<T>::Node* curr = head_;
