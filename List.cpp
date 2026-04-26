@@ -1,16 +1,7 @@
-#include <memory>
+#include <cstddef>
+#include <initializer_list>
 
-template <class T, class Allocator = std::allocator<T>> class List {
-    struct Node {
-        Node* prev;
-        Node* next;
-        T value;
-
-        Node(T val, Node* p = nullptr, Node* n = nullptr)
-            : value(val), prev{p}, next{n} {}
-    };
-
-  public:
+template <class T> struct List {
     using value_type = T;
     using allocator_type = T;
     using size_type = size_t;
@@ -20,9 +11,50 @@ template <class T, class Allocator = std::allocator<T>> class List {
     using const_pointer = const T*;
     class iterator;
     class const_iterator;
+
+    List() : size_(0), sentinel_(new Node{T{}}) {}
+    List(size_type size, const T& value = T{});
+    List(const std::initializer_list<T>& ilist);
+    List(const List& other);
+    List(List&& other);
+    ~List();
+
+    reference front();
+    const_reference front() const;
+    reference back();
+    const_reference back() const;
+
+    iterator begin();
+    const_iterator begin() const;
+    const_iterator cbegin() const;
+    iterator end();
+    const_iterator end() const;
+    const_iterator cend() const;
+
+    bool empty() const noexcept { return size_; }
+    size_type size() const noexcept { return size_; }
+
+    void clear();
+    iterator insert(const_iterator pos, const T& value);
+    iterator erase(const_iterator pos);
+    void push_back(const T& value);
+    void pop_back();
+    void push_front(const T& value);
+    void pop_front();
+    void resize(size_type new_size, const T& value = T{});
+
+    List& operator=(const List& other);
+    List& operator=(List&& other);
+    List& operator=(const std::initializer_list<T>& ilist);
+
+  private:
+    struct Node;
+
+    size_type size_;
+    Node* sentinel_;
 };
 
-template <class T, class A> class List<T, A>::iterator {
+template <class T> class List<T>::iterator {
     Node* ptr;
 
   public:
@@ -65,7 +97,7 @@ template <class T, class A> class List<T, A>::iterator {
     friend class List;
 };
 
-template <class T, class A> class List<T, A>::const_iterator {
+template <class T> class List<T>::const_iterator {
     const Node* ptr;
 
   public:
@@ -74,6 +106,7 @@ template <class T, class A> class List<T, A>::const_iterator {
     using pointer = const T*;
 
     const_iterator(const Node* p) : ptr{p} {}
+    const_iterator(const iterator& it) : ptr{it.ptr} {}
 
     reference operator*() const { return ptr->value; }
     pointer operator->() const { return &ptr->value; }
@@ -105,4 +138,13 @@ template <class T, class A> class List<T, A>::const_iterator {
     }
 
     friend class List;
+};
+
+template <class T> struct List<T>::Node {
+    Node* prev;
+    Node* next;
+    T value;
+
+    Node(T val, Node* p = nullptr, Node* n = nullptr)
+        : value(val), prev{p}, next{n} {}
 };
