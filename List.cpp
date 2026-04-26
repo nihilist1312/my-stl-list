@@ -19,17 +19,17 @@ template <class T> struct List {
     List(List&& other);
     ~List();
 
-    reference front();
-    const_reference front() const;
-    reference back();
-    const_reference back() const;
+    reference front() { return sentinel_->next->value; }
+    const_reference front() const { return sentinel_->next->value; }
+    reference back() { return sentinel_->prev->value; }
+    const_reference back() const { return sentinel_->prev->value; }
 
-    iterator begin();
-    const_iterator begin() const;
-    const_iterator cbegin() const;
-    iterator end();
-    const_iterator end() const;
-    const_iterator cend() const;
+    iterator begin() { return sentinel_->next; }
+    const_iterator begin() const { return sentinel_->next; }
+    const_iterator cbegin() const { return sentinel_->next; }
+    iterator end() { return sentinel_; }
+    const_iterator end() const { return sentinel_; }
+    const_iterator cend() const { return sentinel_; }
 
     bool empty() const noexcept { return size_; }
     size_type size() const noexcept { return size_; }
@@ -148,3 +148,7 @@ template <class T> struct List<T>::Node {
     Node(T val, Node* p = nullptr, Node* n = nullptr)
         : value(val), prev{p}, next{n} {}
 };
+
+// template<class T> List<T>::reference List<T>::front() {
+//
+// }
