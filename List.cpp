@@ -12,7 +12,10 @@ template <class T> struct List {
     class iterator;
     class const_iterator;
 
-    List() : size_(0), sentinel_(new Node{T{}}) {}
+    List() : size_(0), sentinel_(new Node{}) {
+        sentinel_->next = sentinel_;
+        sentinel_->prev = sentinel_;
+    }
     List(size_type size, const T& value = T{});
     List(const std::initializer_list<T>& ilist);
     List(const List& other);
@@ -145,10 +148,16 @@ template <class T> struct List<T>::Node {
     Node* next;
     T value;
 
-    Node(T val, Node* p = nullptr, Node* n = nullptr)
-        : value(val), prev{p}, next{n} {}
+    // Node(T val, Node* p = nullptr, Node* n = nullptr)
+    //     : value(val), prev{p}, next{n} {}
 };
 
-// template<class T> List<T>::reference List<T>::front() {
-//
-// }
+template <class T>
+List<T>::iterator List<T>::erase(List<T>::const_iterator pos) {
+    Node* ptr = pos.ptr;
+    ptr->prev->next = ptr->next;
+    ptr->next->prev = ptr->prev;
+    iterator tmp = ptr->next;
+    delete ptr;
+    return tmp;
+}
