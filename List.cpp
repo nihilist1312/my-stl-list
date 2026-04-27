@@ -168,10 +168,8 @@ List<T>::iterator List<T>::erase(List<T>::const_iterator pos) {
 template <class T>
 List<T>::iterator List<T>::erase(List<T>::const_iterator first,
                                  const_iterator last) {
-    for (auto it = first; first != last; ++first) {
+    for (auto it = first; first != last; ++first)
         erase(it);
-        --size_;
-    }
     return last;
 }
 
@@ -238,6 +236,30 @@ template <class T> List<T>::~List() {
         curr = next;
     }
     delete sentinel_;
+}
+
+template <class T> List<T>& List<T>::operator=(const List& other) {
+    clear();
+    for (const T& elem : other)
+        push_back(elem);
+}
+
+template <class T> List<T>& List<T>::operator=(List&& other) {
+    clear();
+    delete sentinel_;
+
+    size_ = other.size_;
+    sentinel_ = other.sentinel_;
+
+    other.size_ = 0;
+    other.sentinel_ = nullptr;
+}
+
+template <class T>
+List<T>& List<T>::operator=(const std::initializer_list<T>& ilist) {
+    clear();
+    for (const T& elem : ilist)
+        push_back(elem);
 }
 
 int main() {
