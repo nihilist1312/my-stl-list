@@ -176,7 +176,7 @@ template <class T> struct List<T>::Node : NodeBase {
 };
 
 template <class T>
-List<T>::iterator List<T>::erase(List<T>::const_iterator pos) {
+typename List<T>::iterator List<T>::erase(List<T>::const_iterator pos) {
     NodeBase* base = const_cast<NodeBase*>(pos.ptr);
     Node* ptr = static_cast<Node*>(base);
     ptr->prev->next = ptr->next;
@@ -188,19 +188,19 @@ List<T>::iterator List<T>::erase(List<T>::const_iterator pos) {
 }
 
 template <class T>
-List<T>::iterator List<T>::erase(List<T>::const_iterator first,
-                                 const_iterator last) {
+typename List<T>::iterator List<T>::erase(List<T>::const_iterator first,
+                                          const_iterator last) {
     iterator it = const_cast<NodeBase*>(first.ptr);
     iterator end_it = const_cast<NodeBase*>(last.ptr);
     while (it != end_it) {
-        erase(it);
-        it++;
+        it = erase(it);
     }
     return end_it;
 }
 
 template <class T>
-List<T>::iterator List<T>::insert(List<T>::const_iterator pos, const T& value) {
+typename List<T>::iterator List<T>::insert(List<T>::const_iterator pos,
+                                           const T& value) {
     NodeBase* ptr = const_cast<NodeBase*>(pos.ptr);
     Node* new_node = new Node{value, ptr->prev, ptr};
     ptr->prev->next = new_node;
