@@ -249,6 +249,8 @@ List<T>::List(const List& other) : size_(0), sentinel_(new NodeBase{}) {
 template <class T>
 List<T>::List(List&& other) : size_{other.size_}, sentinel_{other.sentinel_} {
     other.sentinel_ = new NodeBase{};
+    other.sentinel_->next = other.sentinel_;
+    other.sentinel_->prev = other.sentinel_;
     other.size_ = 0;
 }
 
@@ -275,6 +277,9 @@ template <class T> List<T>& List<T>::operator=(const List& other) {
 }
 
 template <class T> List<T>& List<T>::operator=(List&& other) {
+    if (sentinel_ == other.sentinel_)
+        return *this;
+
     clear();
     delete sentinel_;
 
@@ -283,6 +288,8 @@ template <class T> List<T>& List<T>::operator=(List&& other) {
 
     other.size_ = 0;
     other.sentinel_ = new NodeBase{};
+    other.sentinel_->next = other.sentinel_;
+    other.sentinel_->prev = other.sentinel_;
 
     return *this;
 }
