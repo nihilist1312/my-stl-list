@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <initializer_list>
+#include <list>
 
 template <class T> struct List {
     using value_type = T;
@@ -37,13 +38,14 @@ template <class T> struct List {
     bool empty() const noexcept { return size_; }
     size_type size() const noexcept { return size_; }
 
-    void clear();
+    void clear() { erase(begin(), end()); }
     iterator insert(const_iterator pos, const T& value);
     iterator erase(const_iterator pos);
-    void push_back(const T& value);
-    void pop_back();
-    void push_front(const T& value);
-    void pop_front();
+    iterator erase(const_iterator first, const_iterator last);
+    void push_back(const T& value) { insert(end(), value); }
+    void pop_back() { erase(sentinel_->prev); }
+    void push_front(const T& value) { insert(begin(), value); }
+    void pop_front() { erase(begin()); }
     void resize(size_type new_size, const T& value = T{});
 
     List& operator=(const List& other);
@@ -148,8 +150,8 @@ template <class T> struct List<T>::Node {
     Node* next;
     T value;
 
-    // Node(T val, Node* p = nullptr, Node* n = nullptr)
-    //     : value(val), prev{p}, next{n} {}
+    Node(T val, Node* p = nullptr, Node* n = nullptr)
+        : value(val), prev{p}, next{n} {}
 };
 
 template <class T>
@@ -159,5 +161,43 @@ List<T>::iterator List<T>::erase(List<T>::const_iterator pos) {
     ptr->next->prev = ptr->prev;
     iterator tmp = ptr->next;
     delete ptr;
+    --size_;
     return tmp;
+}
+
+template <class T>
+List<T>::iterator List<T>::erase(List<T>::const_iterator first,
+                                 const_iterator last) {
+    for (auto it = first; first != last; ++first) {
+        erase(it);
+        --size_;
+    }
+    return last;
+}
+
+template <class T>
+List<T>::iterator List<T>::insert(List<T>::const_iterator pos, const T& value) {
+    Node* ptr = const_cast<Node*>(pos.ptr);
+    Node* new_node = new Node{value, ptr->prev, ptr};
+    ptr->prev->next = new_node;
+    ptr->prev = new_node;
+    ++size_;
+    return new_node;
+}
+
+template <class T>
+void List<T>::resize(List<T>::size_type new_size, const T& value) {
+    for (size_type i = size_; i > new_size; i--) {
+        erase(sentinel_->prev);
+    }
+    for (size_type i = size_; i < new_size; i++) {
+        push_back(value);
+    }
+    size_ = new_size;
+}
+
+int main() {
+    std::list<int> l;
+    l.resize(10);
+    return 0;
 }
