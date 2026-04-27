@@ -196,6 +196,50 @@ void List<T>::resize(List<T>::size_type new_size, const T& value) {
     size_ = new_size;
 }
 
+template <class T>
+List<T>::List(List<T>::size_type size, const T& value)
+    : size_(0), sentinel_(new Node{}) {
+    sentinel_->next = sentinel_;
+    sentinel_->prev = sentinel_;
+    for (int i = 0; i < size; i++)
+        push_back(value);
+}
+
+template <class T>
+List<T>::List(const std::initializer_list<T>& ilist)
+    : size_(0), sentinel_(new Node{}) {
+    sentinel_->prev = sentinel_;
+    sentinel_->next = sentinel_;
+    for (const T& elem : ilist)
+        push_back(elem);
+}
+
+template <class T>
+List<T>::List(const List& other) : size_(0), sentinel_(new Node{}) {
+    sentinel_->prev = sentinel_;
+    sentinel_->next = sentinel_;
+    for (const T& elem : other)
+        push_back(elem);
+}
+
+template <class T>
+List<T>::List(List&& other) : size_{other.size_}, sentinel_{other.sentinel_} {
+    other.sentinel_ = nullptr;
+    other.size_ = 0;
+}
+
+template <class T> List<T>::~List() {
+    if (!sentinel_)
+        return;
+    Node* curr = sentinel_->next;
+    while (curr != sentinel_) {
+        Node* next = curr->next;
+        delete curr;
+        curr = next;
+    }
+    delete sentinel_;
+}
+
 int main() {
     std::list<int> l;
     l.resize(10);
